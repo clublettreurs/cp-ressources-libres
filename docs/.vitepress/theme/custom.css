@@ -1,0 +1,95 @@
+/* Google Font Borel */
+@import url('https://fonts.googleapis.com/css2?family=Borel&display=swap');
+
+/* Police Borel locale */
+@font-face {
+  font-family: 'BorelFRTrad';
+  src: url('/fonts/BorelFRTrad-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BorelGuides';
+  src: url('/fonts/BorelGuides.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --vp-font-family-base: 'Borel', cursive;
+  --vp-font-family-mono: 'Roboto Mono', monospace;
+}
+
+* {
+  font-family: 'Borel', cursive !important;
+}
+
+body {
+  font-family: 'Borel', cursive !important;
+  font-size: 1.4rem;
+}
+
+.VPHome,
+.VPDoc,
+.VPNav,
+.VPSidebar,
+.VPFooter {
+  font-family: 'Borel', cursive !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Borel', cursive !important;
+}
+
+/* Carte d'instructions personnalisée */
+.vp-doc .custom-block.tip,
+.vp-doc div.tip,
+div.custom-block.tip {
+  background: white !important;
+  border: 3px solid #2e59a6 !important;
+  border-radius: 12px !important;
+  padding: 20px 25px !important;
+  color: #000 !important;
+  font-size: 1.2rem !important;
+  font-family: 'BorelSans', sans-serif !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  max-width: 500px !important;
+  width: fit-content !important;
+  margin: 15px auto !important;
+  display: block !important;
+}
+
+.vp-doc .custom-block.tip .custom-block-title {
+  color: #2e59a6;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.vp-doc .custom-block.tip ol,
+.vp-doc .custom-block.tip ul {
+  margin: 10px 0;
+  padding-left: 25px;
+}
+
+.vp-doc .custom-block.tip li {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+/* Titres plus grands */
+.vp-doc h1 {
+  font-size: 2.2rem;
+}
+
+.vp-doc h2 {
+  font-size: 1.8rem;
+}
+
+.vp-doc p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}

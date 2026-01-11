@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📏 Mesurer avec une unité étalon</title>
+    <style>
+        @font-face {
+            font-family: 'PereCastor';
+            src: url('PereCastor-Standard.woff2') format('woff2'),
+                 url('PereCastor-Standard.woff') format('woff'),
+                 url('PereCastor-Standard.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'PereCastor', 'Comic Sans MS', cursive;
+            background: #f0f4f8;
+            height: 100vh;
+            padding: 10px 15px;
+            display: flex;
+            flex-direction: column;
+            letter-spacing: -0.03em;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        .game-container {
+            width: 66%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            min-height: 180px;
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #gameCanvas {
+            display: block;
+        }
+
+        .etalon-container {
+            position: absolute;
+            cursor: grab;
+            user-select: none;
+            z-index: 100;
+            transform-origin: 0% 50%;
+        }
+
+        .etalon-container:active {
+            cursor: grabbing;
+        }
+
+        .etalon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .etalon {
+            width: 80px;
+            height: 6px;
+            background: #ffc107;
+            border: none;
+            border-radius: 0;
+            cursor: grab;
+            position: relative;
+        }
+
+        .etalon:active {
+            cursor: grabbing;
+        }
+
+        /* Trait rouge au départ */
+        .etalon::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 2px;
+            height: 14px;
+            background: #e53935;
+        }
+
+        /* Trait noir à l'extrémité */
+        .etalon::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: -4px;
+            width: 2px;
+            height: 14px;
+            background: #000;
+        }
+
+        /* Petite flèche noire à l'intérieur (tige + pointe) */
+        .etalon-arrow {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 2px;
+            background: #000;
+        }
+
+        .etalon-arrow::after {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid #000;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+
+        .rotate-handle {
+            position: absolute;
+            top: 50%;
+            right: -32px;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .rotate-handle:active {
+            cursor: grabbing;
+        }
+
+        .rotate-handle::before {
+            content: '↺';
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            font-family: 'PereCastor', 'Comic Sans MS', cursive;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-mark {
+            background: #5c6bc0;
+            color: white;
+        }
+
+        .btn-new {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-clear {
+            background: #ef5350;
+            color: white;
+        }
+
+        .answer-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px;
+            background: #e8eaf6;
+            border-radius: 8px;
+        }
+
+        .answer-label {
+            font-size: 1.4rem;
+            color: #000;
+        }
+
+        .answer-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-counter {
+            width: 50px;
+            height: 50px;
+            font-size: 2rem;
+            line-height: 1;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0;
+            padding-bottom: 3px;
+            transition: transform 0.1s;
+        }
+
+        .btn-counter:active {
+            transform: scale(0.95);
+        }
+
+        .btn-minus {
+            background: #ef5350;
+            color: white;
+        }
+
+        .btn-plus {
+            background: #4caf50;
+            color: white;
+        }
+
+        .answer-display {
+            width: 70px;
+            height: 55px;
+            background: white;
+            border: 2px solid #666;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 2.2rem;
+            color: #000;
+        }
+
+        .btn-check {
+            background: #5c6bc0;
+            color: white;
+            font-size: 1rem;
+            padding: 10px 20px;
+        }
+
+        .feedback {
+            font-size: 1.5rem;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+        }
+
+        .mark-counter {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: #5c6bc0;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>📏 Mesurer avec une unité étalon 📐</h1>
+
+    <div class="game-container">
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="gameCanvas"></canvas>
+            <div class="etalon-container" id="etalonContainer">
+                <div class="etalon-wrapper">
+                    <div class="etalon" id="etalon"><div class="etalon-arrow"></div></div>
+                    <div class="rotate-handle" id="rotateHandle"></div>
+                </div>
+            </div>
+            <div class="mark-counter" id="markCounter">✏️ Repères : 0</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-mark" id="btnMark">✏️ Tracer un repère</button>
+            <button class="btn btn-clear" id="btnClear">🧹 Effacer les repères</button>
+            <button class="btn btn-new" id="btnNew">🔄 Nouvelle ligne</button>
+        </div>
+
+        <div class="answer-section">
+            <div class="answer-label">🤔 Combien mesure la ligne « brisée » ?</div>
+            <div class="answer-input">
+                <button class="btn-counter btn-minus" id="btnMinus">−</button>
+                <div class="answer-display" id="answerDisplay">0</div>
+                <button class="btn-counter btn-plus" id="btnPlus">+</button>
+            </div>
+            <button class="btn btn-check" id="btnCheck">✅ Vérifier ma réponse</button>
+            <div class="feedback" id="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        // Éléments du DOM
+        const canvasContainer = document.getElementById('canvasContainer');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const etalonContainer = document.getElementById('etalonContainer');
+        const rotateHandle = document.getElementById('rotateHandle');
+        const markCounter = document.getElementById('markCounter');
+        const answerDisplay = document.getElementById('answerDisplay');
+        const feedback = document.getElementById('feedback');
+
+        // Configuration
+        const ETALON_LENGTH = 80; // Longueur de l'étalon en pixels
+        let segments = [];
+        let marks = [];
+        let answer = 0;
+        let correctAnswer = 0;
+        let isDragging = false;
+        let isRotating = false;
+        let dragOffset = { x: 0, y: 0 };
+        let etalonAngle = 0;
+
+        // Initialisation du canvas
+        function initCanvas() {
+            const rect = canvasContainer.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // Configurer l'étalon (en bas de l'écran)
+            etalonContainer.style.left = '20px';
+            etalonContainer.style.top = (rect.height - 40) + 'px';
+            updateEtalonRotation();
+        }
+
+        function updateEtalonRotation() {
+            etalonContainer.style.transform = `rotate(${etalonAngle}deg)`;
+        }
+
+        // Générer une ligne brisée aléatoire
+        function generateLine() {
+            segments = [];
+            marks = [];
+            updateMarkCounter();
+            feedback.textContent = '';
+            answer = 0;
+            answerDisplay.textContent = '0';
+
+            const numSegments = Math.floor(Math.random() * 2) + 2; // 2 ou 3 segments
+            const margin = 60;
+
+            // Calculer la longueur totale souhaitée (entre 3 et 6 étalons)
+            const totalEtalons = Math.floor(Math.random() * 4) + 3;
+            correctAnswer = totalEtalons;
+            const totalLength = totalEtalons * ETALON_LENGTH;
+            
+            // Répartir sur les segments
+            const segmentLengths = [];
+            let remainingLength = totalLength;
+            
+            for (let i = 0; i < numSegments; i++) {
+                if (i === numSegments - 1) {
+                    segmentLengths.push(remainingLength);
+                } else {
+                    const minLength = ETALON_LENGTH;
+                    const maxLength = remainingLength - (numSegments - i - 1) * ETALON_LENGTH;
+                    const length = minLength + Math.random() * (maxLength - minLength);
+                    const roundedLength = Math.round(length / ETALON_LENGTH) * ETALON_LENGTH;
+                    segmentLengths.push(Math.max(ETALON_LENGTH, roundedLength));
+                    remainingLength -= segmentLengths[i];
+                }
+            }
+
+            // Générer les angles pour chaque segment
+            const angles = [];
+            for (let i = 0; i < numSegments; i++) {
+                // Angles variés mais pas trop extrêmes
+                const angle = (Math.random() - 0.5) * Math.PI / 3;
+                angles.push(angle);
+            }
+
+            // Calculer les points de la ligne temporairement
+            let tempSegments = [];
+            let currentX = 0;
+            let currentY = 0;
+            
+            for (let i = 0; i < numSegments; i++) {
+                const length = segmentLengths[i];
+                const angle = angles[i];
+                
+                const endX = currentX + Math.cos(angle) * length;
+                const endY = currentY + Math.sin(angle) * length;
+
+                tempSegments.push({
+                    x1: currentX,
+                    y1: currentY,
+                    x2: endX,
+                    y2: endY
+                });
+
+                currentX = endX;
+                currentY = endY;
+            }
+
+            // Calculer les bornes de la ligne
+            let minX = 0, maxX = 0, minY = 0, maxY = 0;
+            tempSegments.forEach(seg => {
+                minX = Math.min(minX, seg.x1, seg.x2);
+                maxX = Math.max(maxX, seg.x1, seg.x2);
+                minY = Math.min(minY, seg.y1, seg.y2);
+                maxY = Math.max(maxY, seg.y1, seg.y2);
+            });
+
+            const lineWidth = maxX - minX;
+            const lineHeight = maxY - minY;
+
+            // Centrer la ligne dans le canvas
+            const offsetX = (canvas.width - lineWidth) / 2 - minX;
+            const offsetY = (canvas.height - lineHeight) / 2 - minY;
+
+            // Appliquer le décalage pour centrer
+            tempSegments.forEach(seg => {
+                segments.push({
+                    x1: seg.x1 + offsetX,
+                    y1: seg.y1 + offsetY,
+                    x2: seg.x2 + offsetX,
+                    y2: seg.y2 + offsetY
+                });
+            });
+
+            drawScene();
+        }
+
+        // Dessiner une barre perpendiculaire
+        function drawBar(x, y, refX, refY) {
+            const barLength = 12;
+            const angle = Math.atan2(refY - y, refX - x);
+            const perpAngle = angle + Math.PI / 2;
+            
+            ctx.strokeStyle = '#3182ce';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(
+                x + barLength * Math.cos(perpAngle),
+                y + barLength * Math.sin(perpAngle)
+            );
+            ctx.lineTo(
+                x - barLength * Math.cos(perpAngle),
+                y - barLength * Math.sin(perpAngle)
+            );
+            ctx.stroke();
+        }
+
+        // Dessiner la scène
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dessiner la ligne brisée
+            ctx.strokeStyle = '#3182ce';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            ctx.beginPath();
+            if (segments.length > 0) {
+                ctx.moveTo(segments[0].x1, segments[0].y1);
+                segments.forEach(seg => {
+                    ctx.lineTo(seg.x2, seg.y2);
+                });
+            }
+            ctx.stroke();
+
+            // Barre au départ
+            if (segments.length > 0) {
+                drawBar(segments[0].x1, segments[0].y1, segments[0].x2, segments[0].y2);
+            }
+
+            // Barre à l'arrivée
+            if (segments.length > 0) {
+                const lastSeg = segments[segments.length - 1];
+                drawBar(lastSeg.x2, lastSeg.y2, lastSeg.x1, lastSeg.y1);
+            }
+
+            // Dessiner les repères (lignes verticales)
+            marks.forEach(mark => {
+                ctx.strokeStyle = '#e53e3e';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                
+                const markLength = 15;
+                const angle = mark.angle + Math.PI / 2; // Perpendiculaire à l'étalon
+                
+                ctx.beginPath();
+                ctx.moveTo(
+                    mark.x + markLength * Math.cos(angle),
+                    mark.y + markLength * Math.sin(angle)
+                );
+                ctx.lineTo(
+                    mark.x - markLength * Math.cos(angle),
+                    mark.y - markLength * Math.sin(angle)
+                );
+                ctx.stroke();
+            });
+        }
+
+        // Gestion du drag and drop de l'étalon
+        etalonContainer.addEventListener('mousedown', (e) => {
+            if (e.target === rotateHandle) return;
+            isDragging = true;
+            const rect = etalonContainer.getBoundingClientRect();
+            const containerRect = canvasContainer.getBoundingClientRect();
+            // Offset par rapport au point d'ancrage (extrémité gauche)
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top - 5;
+        });
+
+        // Gestion de la rotation
+        rotateHandle.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            isRotating = true;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const containerRect = canvasContainer.getBoundingClientRect();
+            
+            if (isDragging) {
+                let x = e.clientX - containerRect.left - dragOffset.x;
+                let y = e.clientY - containerRect.top - dragOffset.y;
+
+                // Limiter aux bords du container
+                x = Math.max(10, Math.min(containerRect.width - 20, x));
+                y = Math.max(30, Math.min(containerRect.height - 30, y));
+
+                etalonContainer.style.left = x + 'px';
+                etalonContainer.style.top = y + 'px';
+            }
+            
+            if (isRotating) {
+                const etalonRect = etalonContainer.getBoundingClientRect();
+                // Point d'ancrage = extrémité gauche de l'étalon
+                const anchorX = etalonRect.left;
+                const anchorY = etalonRect.top + 5;
+                
+                const angle = Math.atan2(e.clientY - anchorY, e.clientX - anchorX);
+                etalonAngle = angle * 180 / Math.PI;
+                updateEtalonRotation();
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            isRotating = false;
+        });
+
+        // Support tactile
+        etalonContainer.addEventListener('touchstart', (e) => {
+            if (e.target === rotateHandle) return;
+            e.preventDefault();
+            isDragging = true;
+            const touch = e.touches[0];
+            const rect = etalonContainer.getBoundingClientRect();
+            dragOffset.x = touch.clientX - rect.left;
+            dragOffset.y = touch.clientY - rect.top - 5;
+        });
+
+        rotateHandle.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            isRotating = true;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            const containerRect = canvasContainer.getBoundingClientRect();
+            const touch = e.touches[0];
+            
+            if (isDragging) {
+                e.preventDefault();
+                let x = touch.clientX - containerRect.left - dragOffset.x;
+                let y = touch.clientY - containerRect.top - dragOffset.y;
+
+                x = Math.max(10, Math.min(containerRect.width - 20, x));
+                y = Math.max(30, Math.min(containerRect.height - 30, y));
+
+                etalonContainer.style.left = x + 'px';
+                etalonContainer.style.top = y + 'px';
+            }
+            
+            if (isRotating) {
+                e.preventDefault();
+                const etalonRect = etalonContainer.getBoundingClientRect();
+                const anchorX = etalonRect.left;
+                const anchorY = etalonRect.top + 5;
+                
+                const angle = Math.atan2(touch.clientY - anchorY, touch.clientX - anchorX);
+                etalonAngle = angle * 180 / Math.PI;
+                updateEtalonRotation();
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+            isRotating = false;
+        });
+
+        // Tracer un repère
+        document.getElementById('btnMark').addEventListener('click', () => {
+            const angleRad = etalonAngle * Math.PI / 180;
+            
+            // Le point d'ancrage est au bord gauche de l'étalon (transform-origin: 0% 50%)
+            // Position CSS du container = position du point d'ancrage
+            const anchorX = parseFloat(etalonContainer.style.left) || 0;
+            const anchorY = (parseFloat(etalonContainer.style.top) || 0) + 3; // +3 pour le centre vertical (hauteur 6px)
+            
+            // Le trait noir est à 80px du point d'ancrage, dans la direction de l'angle
+            const markX = anchorX + ETALON_LENGTH * Math.cos(angleRad);
+            const markY = anchorY + ETALON_LENGTH * Math.sin(angleRad);
+
+            marks.push({ x: markX, y: markY, angle: angleRad });
+            updateMarkCounter();
+            drawScene();
+        });
+
+        // Mettre à jour le compteur de repères
+        function updateMarkCounter() {
+            markCounter.textContent = `✏️ Repères : ${marks.length}`;
+        }
+
+        // Effacer les repères
+        document.getElementById('btnClear').addEventListener('click', () => {
+            marks = [];
+            updateMarkCounter();
+            drawScene();
+        });
+
+        // Nouvelle ligne
+        document.getElementById('btnNew').addEventListener('click', () => {
+            generateLine();
+        });
+
+        // Boutons + et -
+        document.getElementById('btnPlus').addEventListener('click', () => {
+            answer++;
+            answerDisplay.textContent = answer;
+            feedback.textContent = '';
+        });
+
+        document.getElementById('btnMinus').addEventListener('click', () => {
+            if (answer > 0) {
+                answer--;
+                answerDisplay.textContent = answer;
+                feedback.textContent = '';
+            }
+        });
+
+        // Vérifier la réponse
+        document.getElementById('btnCheck').addEventListener('click', () => {
+            if (answer === correctAnswer) {
+                feedback.textContent = '🎉 Bravo ! C\'est exact ! 🌟';
+                feedback.style.color = '#38a169';
+                // Petite animation
+                feedback.style.animation = 'none';
+                setTimeout(() => {
+                    feedback.style.animation = 'bounce 0.5s ease';
+                }, 10);
+            } else if (answer < correctAnswer) {
+                feedback.textContent = '🤔 C\'est un peu plus...';
+                feedback.style.color = '#dd6b20';
+            } else {
+                feedback.textContent = '🤔 C\'est un peu moins...';
+                feedback.style.color = '#dd6b20';
+            }
+        });
+
+        // Redimensionnement
+        window.addEventListener('resize', () => {
+            initCanvas();
+            drawScene();
+        });
+
+        // Initialisation
+        initCanvas();
+        generateLine();
+
+        // Animation CSS pour le feedback
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bounce {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
