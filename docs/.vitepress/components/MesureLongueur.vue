@@ -38,17 +38,35 @@ let showInstructions = ref(false)
 let confettiParticles = []
 let confettiAnimationId = null
 
+// Dimensions logiques du canvas (indépendantes de la résolution)
+let canvasWidth = 0
+let canvasHeight = 0
+
 function initCanvas() {
   if (!canvasContainer.value || !canvas.value) return
   const rect = canvasContainer.value.getBoundingClientRect()
-  canvas.value.width = rect.width
-  canvas.value.height = rect.height
+  const dpr = window.devicePixelRatio || 1
+  
+  // Stocker les dimensions logiques
+  canvasWidth = rect.width
+  canvasHeight = rect.height
+  
+  // Définir les dimensions du buffer (haute résolution)
+  canvas.value.width = rect.width * dpr
+  canvas.value.height = rect.height * dpr
+  
+  // Mettre à l'échelle via CSS pour affichage correct
+  canvas.value.style.width = rect.width + 'px'
+  canvas.value.style.height = rect.height + 'px'
+  
   ctx = canvas.value.getContext('2d')
+  // Mettre à l'échelle le contexte pour dessiner en coordonnées logiques
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   
   // Configurer l'étalon (en bas de l'écran)
   if (etalonContainer.value) {
     etalonContainer.value.style.left = '20px'
-    etalonContainer.value.style.top = (rect.height - 40) + 'px'
+    etalonContainer.value.style.top = (canvasHeight - 40) + 'px'
   }
   updateEtalonRotation()
 }
@@ -149,9 +167,9 @@ function generateLine() {
   const lineWidth = maxX - minX
   const lineHeight = maxY - minY
 
-  // Centrer la ligne dans le canvas
-  const offsetX = (canvas.value.width - lineWidth) / 2 - minX
-  const offsetY = (canvas.value.height - lineHeight) / 2 - minY
+  // Centrer la ligne dans le canvas (utiliser les dimensions logiques)
+  const offsetX = (canvasWidth - lineWidth) / 2 - minX
+  const offsetY = (canvasHeight - lineHeight) / 2 - minY
 
   // Appliquer le décalage pour centrer
   tempSegments.forEach(seg => {
@@ -186,7 +204,7 @@ function drawBar(x, y, nextX, nextY) {
 function drawScene() {
   if (!ctx || !canvas.value) return
   
-  ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
   // Dessiner la ligne brisée
   ctx.strokeStyle = '#2e59a6'
@@ -239,6 +257,7 @@ function drawScene() {
 function startDrag(e) {
   if (e.target === rotateHandle.value) return
   isDragging = true
+  etalonContainer.value.classList.add('dragging')
   const rect = etalonContainer.value.getBoundingClientRect()
   dragOffset.x = e.clientX - rect.left
   dragOffset.y = e.clientY - rect.top - 5
@@ -278,6 +297,9 @@ function onMouseMove(e) {
 function stopDragRotate() {
   isDragging = false
   isRotating = false
+  if (etalonContainer.value) {
+    etalonContainer.value.classList.remove('dragging')
+  }
 }
 
 function traceMark() {
@@ -431,11 +453,11 @@ onUnmounted(() => {
         <div class="menu-section">
           <strong>📍 Navigation</strong>
           <ul>
-            <li><a href="/">🏠 Accueil</a></li>
-            <li><a href="/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
-            <li><a href="/grandeurs-mesures/mesure-1-segment">• 1 segment</a></li>
-            <li><a href="/grandeurs-mesures/mesure-2-segments">• 2 segments</a></li>
-            <li><a href="/grandeurs-mesures/mesure-3-segments">• 3 segments</a></li>
+            <li><a href="/cp-ressources-libres/">🏠 Accueil</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/mesure-1-segment">• 1 segment</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/mesure-2-segments">• 2 segments</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/mesure-3-segments">• 3 segments</a></li>
           </ul>
         </div>
         
@@ -635,9 +657,13 @@ onUnmounted(() => {
   user-select: none;
   z-index: 100;
   transform-origin: 0% 50%;
+  /* Zone de sélection élargie */
+  padding: 15px 5px;
+  margin: -15px -5px;
 }
 
-.etalon-container:active {
+.etalon-container:active,
+.etalon-container.dragging {
   cursor: grabbing;
 }
 
@@ -653,7 +679,7 @@ onUnmounted(() => {
   background: #ffc107;
   border: none;
   border-radius: 0;
-  cursor: grab;
+  cursor: inherit;
   position: relative;
 }
 

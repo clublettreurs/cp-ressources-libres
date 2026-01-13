@@ -34,13 +34,31 @@ let bandLength = 0
 let correctAnswer = 0
 let answer = ref(0)
 
+// Dimensions logiques du canvas (indépendantes de la résolution)
+let canvasWidth = 0
+let canvasHeight = 0
+
 function initCanvas() {
   if (!canvasContainer.value) return
   
   const rect = canvasContainer.value.getBoundingClientRect()
-  canvas.value.width = rect.width
-  canvas.value.height = rect.height
+  const dpr = window.devicePixelRatio || 1
+  
+  // Stocker les dimensions logiques
+  canvasWidth = rect.width
+  canvasHeight = rect.height
+  
+  // Définir les dimensions du buffer (haute résolution)
+  canvas.value.width = rect.width * dpr
+  canvas.value.height = rect.height * dpr
+  
+  // Mettre à l'échelle via CSS pour affichage correct
+  canvas.value.style.width = rect.width + 'px'
+  canvas.value.style.height = rect.height + 'px'
+  
   ctx = canvas.value.getContext('2d')
+  // Mettre à l'échelle le contexte pour dessiner en coordonnées logiques
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 }
 
 function generateBand() {
@@ -57,9 +75,9 @@ function generateBand() {
   correctAnswer = Math.floor(Math.random() * 4) + 3
   bandLength = correctAnswer * ETALON_WIDTH
   
-  // Centrer la bande horizontalement
-  bandX = (canvas.value.width - bandLength) / 2
-  bandY = canvas.value.height / 2 - BAND_HEIGHT / 2
+  // Centrer la bande horizontalement (utiliser les dimensions logiques)
+  bandX = (canvasWidth - bandLength) / 2
+  bandY = canvasHeight / 2 - BAND_HEIGHT / 2
   
   // Position initiale de l'étalon (à gauche de la bande)
   etalonX = bandX - ETALON_WIDTH - 30
@@ -71,7 +89,7 @@ function generateBand() {
 function drawScene() {
   if (!ctx || !canvas.value) return
   
-  ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight)
   
   // Dessiner la bande à mesurer (vert clair)
   ctx.fillStyle = '#aed6ba'
@@ -115,8 +133,9 @@ function drawScene() {
 // Gestion du drag de l'étalon
 function getMousePos(e) {
   const rect = canvas.value.getBoundingClientRect()
-  const scaleX = canvas.value.width / rect.width
-  const scaleY = canvas.value.height / rect.height
+  // Utiliser les dimensions logiques pour la mise à l'échelle
+  const scaleX = canvasWidth / rect.width
+  const scaleY = canvasHeight / rect.height
   
   if (e.touches) {
     return {
@@ -131,8 +150,10 @@ function getMousePos(e) {
 }
 
 function isOnEtalon(x, y) {
+  // Zone de sélection élargie sur les côtés longs (haut et bas)
+  const hitPadding = 15
   return x >= etalonX && x <= etalonX + ETALON_WIDTH &&
-         y >= etalonY && y <= etalonY + ETALON_HEIGHT
+         y >= etalonY - hitPadding && y <= etalonY + ETALON_HEIGHT + hitPadding
 }
 
 function startDrag(e) {

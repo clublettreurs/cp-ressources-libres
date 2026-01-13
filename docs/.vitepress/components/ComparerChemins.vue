@@ -34,17 +34,35 @@ let selectedPath = ref('')
 let confettiParticles = []
 let confettiAnimationId = null
 
+// Dimensions logiques du canvas (indépendantes de la résolution)
+let canvasWidth = 0
+let canvasHeight = 0
+
 function initCanvas() {
   if (!canvasContainer.value || !canvas.value) return
   const rect = canvasContainer.value.getBoundingClientRect()
-  canvas.value.width = rect.width
-  canvas.value.height = rect.height
+  const dpr = window.devicePixelRatio || 1
+  
+  // Stocker les dimensions logiques
+  canvasWidth = rect.width
+  canvasHeight = rect.height
+  
+  // Définir les dimensions du buffer (haute résolution)
+  canvas.value.width = rect.width * dpr
+  canvas.value.height = rect.height * dpr
+  
+  // Mettre à l'échelle via CSS pour affichage correct
+  canvas.value.style.width = rect.width + 'px'
+  canvas.value.style.height = rect.height + 'px'
+  
   ctx = canvas.value.getContext('2d')
+  // Mettre à l'échelle le contexte pour dessiner en coordonnées logiques
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   
   // Configurer l'étalon (en bas de l'écran)
   if (etalonContainer.value) {
     etalonContainer.value.style.left = '20px'
-    etalonContainer.value.style.top = (rect.height - 40) + 'px'
+    etalonContainer.value.style.top = (canvasHeight - 40) + 'px'
   }
   updateEtalonRotation()
 }
@@ -69,8 +87,8 @@ function generatePaths() {
   showConfetti.value = false
   stopConfetti()
 
-  const w = canvas.value.width
-  const h = canvas.value.height
+  const w = canvasWidth
+  const h = canvasHeight
   
   if (w === 0 || h === 0) return
   
@@ -124,7 +142,7 @@ function generatePath(start, end, numSegments, direction, detourFactor = 0.5) {
     const baseOffset = 40 + detourFactor * 80
     const yOffset = direction * (Math.random() * baseOffset + 30 + detourFactor * 50)
     const y = start.y + yOffset + (Math.random() - 0.5) * 20
-    points.push({ x, y: Math.max(80, Math.min(canvas.value.height - 120, y)) })
+    points.push({ x, y: Math.max(80, Math.min(canvasHeight - 120, y)) })
   }
   
   points.push({ ...end })
@@ -179,7 +197,7 @@ function drawPathMarks(path, color) {
 function drawScene() {
   if (!ctx || !canvas.value) return
   
-  ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight)
   
   if (path1.length === 0 || path2.length === 0) return
 
@@ -243,6 +261,7 @@ function drawScene() {
 function startDrag(e) {
   if (e.target === rotateHandle.value) return
   isDragging = true
+  etalonContainer.value.classList.add('dragging')
   const rect = etalonContainer.value.getBoundingClientRect()
   dragOffset.x = e.clientX - rect.left
   dragOffset.y = e.clientY - rect.top - 5
@@ -282,6 +301,9 @@ function onMouseMove(e) {
 function stopDragRotate() {
   isDragging = false
   isRotating = false
+  if (etalonContainer.value) {
+    etalonContainer.value.classList.remove('dragging')
+  }
 }
 
 function traceMark() {
@@ -434,9 +456,9 @@ onUnmounted(() => {
         <div class="menu-section">
           <strong>📍 Navigation</strong>
           <ul>
-            <li><a href="/">🏠 Accueil</a></li>
-            <li><a href="/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
-            <li><a href="/grandeurs-mesures/comparer-chemins">• Comparer chemins</a></li>
+            <li><a href="/cp-ressources-libres/">🏠 Accueil</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/comparer-chemins">• Comparer chemins</a></li>
           </ul>
         </div>
         
@@ -639,9 +661,13 @@ onUnmounted(() => {
   user-select: none;
   z-index: 100;
   transform-origin: 0% 50%;
+  /* Zone de sélection élargie */
+  padding: 15px 5px;
+  margin: -15px -5px;
 }
 
-.etalon-container:active {
+.etalon-container:active,
+.etalon-container.dragging {
   cursor: grabbing;
 }
 
@@ -657,7 +683,7 @@ onUnmounted(() => {
   background: #ffc107;
   border: none;
   border-radius: 0;
-  cursor: grab;
+  cursor: inherit;
   position: relative;
 }
 
