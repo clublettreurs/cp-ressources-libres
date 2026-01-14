@@ -63,9 +63,9 @@ function initCanvas() {
   // Mettre à l'échelle le contexte pour dessiner en coordonnées logiques
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   
-  // Configurer l'étalon (en bas de l'écran)
+  // Configurer l'étalon (en bas au milieu de l'écran)
   if (etalonContainer.value) {
-    etalonContainer.value.style.left = '20px'
+    etalonContainer.value.style.left = ((canvasWidth - 80) / 2) + 'px'
     etalonContainer.value.style.top = (canvasHeight - 40) + 'px'
   }
   updateEtalonRotation()
@@ -417,8 +417,22 @@ function stopConfetti() {
 }
 
 onMounted(() => {
-  initCanvas()
-  generateLine()
+  // Attendre que le DOM soit prêt avec nextTick puis un petit délai pour Chromium Android
+  nextTick(() => {
+    setTimeout(() => {
+      initCanvas()
+      // Vérifier que les dimensions sont valides
+      if (canvasWidth > 0 && canvasHeight > 0) {
+        generateLine()
+      } else {
+        // Réessayer après un délai si les dimensions ne sont pas prêtes
+        setTimeout(() => {
+          initCanvas()
+          generateLine()
+        }, 100)
+      }
+    }, 50)
+  })
   
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseup', stopDragRotate)
@@ -557,7 +571,6 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s;
@@ -572,6 +585,7 @@ onUnmounted(() => {
   height: 3px;
   background: white;
   border-radius: 2px;
+  margin: 2.5px 0;
 }
 
 .menu-card {
@@ -763,12 +777,18 @@ onUnmounted(() => {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+}
+
+.bottom-bar > * {
+  margin: 0 10px;
 }
 
 .controls {
   display: flex;
-  gap: 10px;
+}
+
+.controls > * {
+  margin: 0 5px;
 }
 
 .btn {
@@ -812,7 +832,10 @@ onUnmounted(() => {
 .answer-section {
   display: flex;
   align-items: center;
-  gap: 15px;
+}
+
+.answer-section > * {
+  margin: 0 7px;
 }
 
 .answer-label {
@@ -826,7 +849,10 @@ onUnmounted(() => {
 .answer-input {
   display: flex;
   align-items: center;
-  gap: 8px;
+}
+
+.answer-input > * {
+  margin: 0 4px;
 }
 
 .btn-counter {

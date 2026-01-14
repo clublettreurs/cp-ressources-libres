@@ -292,8 +292,19 @@ async function waitForFont() {
 
 onMounted(async () => {
   await waitForFont()
-  initCanvas()
-  generateWord()
+  
+  // Attendre que le DOM soit prêt avec un petit délai pour Chromium Android
+  setTimeout(() => {
+    initCanvas()
+    if (canvasWidth > 0 && canvasHeight > 0) {
+      generateWord()
+    } else {
+      setTimeout(() => {
+        initCanvas()
+        generateWord()
+      }, 100)
+    }
+  }, 50)
   
   const canvas = drawCanvas.value
   if (canvas) {
@@ -358,9 +369,9 @@ onUnmounted(() => {
         <div class="menu-section">
           <strong>📍 Navigation</strong>
           <ul>
-            <li><a href="/">🏠 Accueil</a></li>
-            <li><a href="/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
-            <li><a href="/ecriture/">✏️ Écriture</a></li>
+            <li><a href="/cp-ressources-libres/">🏠 Accueil</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
+            <li><a href="/cp-ressources-libres/ecriture/">✏️ Écriture</a></li>
           </ul>
         </div>
         
@@ -436,7 +447,6 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s;
@@ -451,6 +461,7 @@ onUnmounted(() => {
   height: 3px;
   background: white;
   border-radius: 2px;
+  margin: 2.5px 0;
 }
 
 .menu-card {
@@ -561,19 +572,28 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
   flex-wrap: wrap;
+}
+
+.bottom-bar > * {
+  margin: 0 10px;
 }
 
 .controls {
   display: flex;
-  gap: 10px;
+}
+
+.controls > * {
+  margin: 0 5px;
 }
 
 .answer-section {
   display: flex;
   align-items: center;
-  gap: 15px;
+}
+
+.answer-section > * {
+  margin: 0 7px;
 }
 
 .btn {

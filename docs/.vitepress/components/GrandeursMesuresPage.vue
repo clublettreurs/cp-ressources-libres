@@ -19,9 +19,9 @@ const showMenu = ref(false)
         <div class="menu-section">
           <strong>📍 Navigation</strong>
           <ul>
-            <li><a href="/">🏠 Accueil</a></li>
-            <li><a href="/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
-            <li><a href="/ecriture/">✏️ Écriture</a></li>
+            <li><a href="/cp-ressources-libres/">🏠 Accueil</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
+            <li><a href="/cp-ressources-libres/ecriture/">✏️ Écriture</a></li>
           </ul>
         </div>
       </div>
@@ -34,7 +34,7 @@ const showMenu = ref(false)
       
       <!-- Ligne 1: Étalon -->
       <div class="cards-row">
-        <a href="/grandeurs-mesures/mesure-etalon" class="card">
+        <a href="/cp-ressources-libres/grandeurs-mesures/mesure-etalon" class="card">
           <div class="card-icon card-icon-mesure">
             <svg viewBox="0 0 80 30" class="icon-mesure">
               <rect x="5" y="8" width="30" height="14" fill="#fbb90d" rx="2"/>
@@ -48,7 +48,7 @@ const showMenu = ref(false)
       
       <!-- Ligne 2: 3 segments -->
       <div class="cards-row">
-        <a href="/grandeurs-mesures/mesure-1-segment" class="card">
+        <a href="/cp-ressources-libres/grandeurs-mesures/mesure-1-segment" class="card">
           <div class="card-icon card-icon-mesure">
             <svg viewBox="0 0 80 30" class="icon-mesure">
               <line x1="5" y1="15" x2="75" y2="15" stroke="#fbb90d" stroke-width="2" stroke-linecap="round"/>
@@ -58,7 +58,7 @@ const showMenu = ref(false)
           <div class="card-desc">Ligne droite</div>
         </a>
         
-        <a href="/grandeurs-mesures/mesure-2-segments" class="card">
+        <a href="/cp-ressources-libres/grandeurs-mesures/mesure-2-segments" class="card">
           <div class="card-icon card-icon-mesure">
             <svg viewBox="0 0 80 30" class="icon-mesure">
               <polyline points="5,22 40,8 75,22" fill="none" stroke="#fbb90d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -68,7 +68,7 @@ const showMenu = ref(false)
           <div class="card-desc">Ligne brisée</div>
         </a>
         
-        <a href="/grandeurs-mesures/mesure-3-segments" class="card">
+        <a href="/cp-ressources-libres/grandeurs-mesures/mesure-3-segments" class="card">
           <div class="card-icon card-icon-mesure">
             <svg viewBox="0 0 80 30" class="icon-mesure">
               <polyline points="5,20 25,8 55,22 75,10" fill="none" stroke="#fbb90d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -81,7 +81,7 @@ const showMenu = ref(false)
       
       <!-- Ligne 3: Chemins -->
       <div class="cards-row">
-        <a href="/grandeurs-mesures/comparer-chemins" class="card">
+        <a href="/cp-ressources-libres/grandeurs-mesures/comparer-chemins" class="card">
           <div class="card-icon card-icon-mesure">
             <svg viewBox="0 0 80 30" class="icon-mesure">
               <text x="2" y="18" font-size="14">🏠</text>
@@ -96,7 +96,7 @@ const showMenu = ref(false)
       </div>
       
       <p class="footer-text">
-        <a href="/" class="back-link">← Retour à l'accueil</a>
+        <a href="/cp-ressources-libres/" class="back-link">← Retour à l'accueil</a>
       </p>
     </div>
   </div>
@@ -133,7 +133,6 @@ const showMenu = ref(false)
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s;
@@ -148,6 +147,7 @@ const showMenu = ref(false)
   height: 3px;
   background: white;
   border-radius: 2px;
+  margin: 2.5px 0;
 }
 
 .menu-card {
@@ -224,7 +224,6 @@ h1 {
 
 .cards-row {
   display: flex;
-  gap: 30px;
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 20px;
@@ -235,6 +234,7 @@ h1 {
   border: none;
   border-radius: 16px;
   padding: 30px 40px;
+  margin: 10px 15px;
   text-decoration: none;
   color: #fff;
   transition: transform 0.2s, box-shadow 0.2s;

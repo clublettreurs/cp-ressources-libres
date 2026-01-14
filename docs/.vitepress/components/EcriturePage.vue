@@ -19,9 +19,9 @@ const showMenu = ref(false)
         <div class="menu-section">
           <strong>📍 Navigation</strong>
           <ul>
-            <li><a href="/">🏠 Accueil</a></li>
-            <li><a href="/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
-            <li><a href="/ecriture/">✏️ Écriture</a></li>
+            <li><a href="/cp-ressources-libres/">🏠 Accueil</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
+            <li><a href="/cp-ressources-libres/ecriture/">✏️ Écriture</a></li>
           </ul>
         </div>
       </div>
@@ -33,7 +33,7 @@ const showMenu = ref(false)
       <p class="tagline">Exercices d'écriture cursive</p>
       
       <div class="cards">
-        <a href="/ecriture/tracer-lettres" class="card">
+        <a href="/cp-ressources-libres/ecriture/tracer-lettres" class="card">
           <div class="card-icon card-icon-ecriture">
             <span class="icon-guide">b</span>
             <span class="icon-text">Abc</span>
@@ -42,7 +42,7 @@ const showMenu = ref(false)
           <div class="card-desc">Tracer les lettres</div>
         </a>
         
-        <a href="/ecriture/tracer-mots" class="card">
+        <a href="/cp-ressources-libres/ecriture/tracer-mots" class="card">
           <div class="card-icon card-icon-ecriture">
             <span class="icon-guide">bb</span>
             <span class="icon-text">Stylo</span>
@@ -53,7 +53,7 @@ const showMenu = ref(false)
       </div>
       
       <p class="footer-text">
-        <a href="/" class="back-link">← Retour à l'accueil</a>
+        <a href="/cp-ressources-libres/" class="back-link">← Retour à l'accueil</a>
       </p>
     </div>
   </div>
@@ -90,7 +90,6 @@ const showMenu = ref(false)
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s;
@@ -105,6 +104,7 @@ const showMenu = ref(false)
   height: 3px;
   background: white;
   border-radius: 2px;
+  margin: 2.5px 0;
 }
 
 .menu-card {
@@ -181,7 +181,6 @@ h1 {
 
 .cards {
   display: flex;
-  gap: 30px;
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 40px;
@@ -192,6 +191,7 @@ h1 {
   border: none;
   border-radius: 16px;
   padding: 30px 40px;
+  margin: 10px 15px;
   text-decoration: none;
   color: #fff;
   transition: transform 0.2s, box-shadow 0.2s;

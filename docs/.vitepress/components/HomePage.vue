@@ -19,9 +19,9 @@ const showMenu = ref(false)
         <div class="menu-section">
           <strong>📍 Navigation</strong>
           <ul>
-            <li><a href="/">🏠 Accueil</a></li>
-            <li><a href="/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
-            <li><a href="/ecriture/">✏️ Écriture</a></li>
+            <li><a href="/cp-ressources-libres/">🏠 Accueil</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
+            <li><a href="/cp-ressources-libres/ecriture/">✏️ Écriture</a></li>
           </ul>
         </div>
       </div>
@@ -33,7 +33,7 @@ const showMenu = ref(false)
       <p class="tagline">Ressources pédagogiques numériques libres pour les enseignants de CP</p>
       
       <div class="cards">
-        <a href="/grandeurs-mesures/" class="card">
+        <a href="/cp-ressources-libres/grandeurs-mesures/" class="card">
           <div class="card-icon card-icon-mesure">
             <svg viewBox="0 0 100 40" class="icon-mesure">
               <line x1="2" y1="20" x2="98" y2="20" stroke="white" stroke-width="3" stroke-linecap="round"/>
@@ -47,7 +47,7 @@ const showMenu = ref(false)
           <div class="card-desc">Les longueurs</div>
         </a>
         
-        <a href="/ecriture/" class="card">
+        <a href="/cp-ressources-libres/ecriture/" class="card">
           <div class="card-icon card-icon-ecriture">
             <span class="icon-guide">b</span>
             <span class="icon-abc">abc</span>
@@ -96,7 +96,6 @@ const showMenu = ref(false)
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s;
@@ -111,6 +110,7 @@ const showMenu = ref(false)
   height: 3px;
   background: white;
   border-radius: 2px;
+  margin: 2.5px 0;
 }
 
 .menu-card {
@@ -187,7 +187,6 @@ h1 {
 
 .cards {
   display: flex;
-  gap: 30px;
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 40px;
@@ -198,6 +197,7 @@ h1 {
   border: none;
   border-radius: 16px;
   padding: 30px 40px;
+  margin: 15px;
   text-decoration: none;
   color: #fff;
   transition: transform 0.2s, box-shadow 0.2s;

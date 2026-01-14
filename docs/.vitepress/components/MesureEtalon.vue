@@ -79,9 +79,9 @@ function generateBand() {
   bandX = (canvasWidth - bandLength) / 2
   bandY = canvasHeight / 2 - BAND_HEIGHT / 2
   
-  // Position initiale de l'étalon (à gauche de la bande)
-  etalonX = bandX - ETALON_WIDTH - 30
-  etalonY = bandY
+  // Position initiale de l'étalon (en bas au milieu)
+  etalonX = (canvasWidth - ETALON_WIDTH) / 2
+  etalonY = canvasHeight - ETALON_HEIGHT - 20
   
   drawScene()
 }
@@ -297,8 +297,22 @@ function stopConfetti() {
 }
 
 onMounted(() => {
-  initCanvas()
-  generateBand()
+  // Attendre que le DOM soit prêt avec nextTick puis un petit délai pour Chromium Android
+  nextTick(() => {
+    setTimeout(() => {
+      initCanvas()
+      // Vérifier que les dimensions sont valides
+      if (canvasWidth > 0 && canvasHeight > 0) {
+        generateBand()
+      } else {
+        // Réessayer après un délai si les dimensions ne sont pas prêtes
+        setTimeout(() => {
+          initCanvas()
+          generateBand()
+        }, 100)
+      }
+    }, 50)
+  })
   
   // Event listeners
   canvas.value.addEventListener('mousedown', startDrag)
@@ -420,7 +434,6 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 5px;
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s;
@@ -435,6 +448,7 @@ onUnmounted(() => {
   height: 3px;
   background: white;
   border-radius: 2px;
+  margin: 2.5px 0;
 }
 
 .menu-card {
@@ -534,12 +548,18 @@ onUnmounted(() => {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+}
+
+.bottom-bar > * {
+  margin: 0 10px;
 }
 
 .controls {
   display: flex;
-  gap: 10px;
+}
+
+.controls > * {
+  margin: 0 5px;
 }
 
 .btn {
@@ -583,7 +603,10 @@ onUnmounted(() => {
 .answer-section {
   display: flex;
   align-items: center;
-  gap: 15px;
+}
+
+.answer-section > * {
+  margin: 0 7px;
 }
 
 .answer-label {
@@ -597,7 +620,10 @@ onUnmounted(() => {
 .answer-input {
   display: flex;
   align-items: center;
-  gap: 8px;
+}
+
+.answer-input > * {
+  margin: 0 4px;
 }
 
 .btn-counter {
