@@ -341,20 +341,20 @@ onUnmounted(() => {
     
     <!-- Menu burger -->
     <div class="menu-overlay">
-      <div class="menu-toggle" @click="showMenu = !showMenu">
+      <div class="menu-toggle" @click="showMenu = !showMenu" @touchend.prevent="showMenu = !showMenu">
         <span class="burger-line"></span>
         <span class="burger-line"></span>
         <span class="burger-line"></span>
       </div>
       <div class="menu-card" v-show="showMenu">
-        <div class="menu-close" @click="showMenu = false">✕</div>
+        <div class="menu-close" @click="showMenu = false" @touchend.prevent="showMenu = false">✕</div>
         
         <div class="menu-section">
           <strong>📍 Navigation</strong>
           <ul>
-            <li><a href="/">🏠 Accueil</a></li>
-            <li><a href="/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
-            <li><a href="/ecriture/">✏️ Écriture</a></li>
+            <li><a href="/cp-ressources-libres/">🏠 Accueil</a></li>
+            <li><a href="/cp-ressources-libres/grandeurs-mesures/">📏 Grandeurs et mesures</a></li>
+            <li><a href="/cp-ressources-libres/ecriture/">✏️ Écriture</a></li>
           </ul>
         </div>
         

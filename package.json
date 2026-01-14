@@ -1,0 +1,10 @@
+{
+  "name": "cp-ressources-libres",
+  "version": "1.0.0",
+  "scripts": {
+    "docs:build": "vitepress build docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}

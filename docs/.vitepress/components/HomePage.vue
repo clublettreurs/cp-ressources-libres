@@ -8,13 +8,13 @@ const showMenu = ref(false)
   <div class="home-wrapper">
     <!-- Menu burger -->
     <div class="menu-overlay">
-      <div class="menu-toggle" @click="showMenu = !showMenu">
+      <div class="menu-toggle" @click="showMenu = !showMenu" @touchend.prevent="showMenu = !showMenu">
         <span class="burger-line"></span>
         <span class="burger-line"></span>
         <span class="burger-line"></span>
       </div>
       <div class="menu-card" v-show="showMenu">
-        <div class="menu-close" @click="showMenu = false">✕</div>
+        <div class="menu-close" @click="showMenu = false" @touchend.prevent="showMenu = false">✕</div>
         
         <div class="menu-section">
           <strong>📍 Navigation</strong>
@@ -66,6 +66,11 @@ const showMenu = ref(false)
 </template>
 
 <style scoped>
+/* ==============================================
+   GRILLE 4px - Système d'espacement responsive
+   Tous les espacements sont multiples de 4px
+   ============================================== */
+
 .home-wrapper {
   position: fixed;
   top: 0;
@@ -77,27 +82,29 @@ const showMenu = ref(false)
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 64px 16px 24px 16px; /* 16x4, 4x4, 6x4, 4x4 */
+  overflow-y: auto;
 }
 
 /* Menu burger */
 .menu-overlay {
-  position: absolute;
-  top: 15px;
-  left: 15px;
+  position: fixed;
+  top: 16px; /* 4x4 */
+  left: 16px; /* 4x4 */
   z-index: 200;
 }
 
 .menu-toggle {
-  width: 45px;
-  height: 45px;
+  width: 48px; /* 12x4 */
+  height: 48px; /* 12x4 */
   background: #2e59a6;
-  border-radius: 8px;
+  border-radius: 8px; /* 2x4 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   transition: transform 0.2s;
 }
 
@@ -106,47 +113,49 @@ const showMenu = ref(false)
 }
 
 .burger-line {
-  width: 24px;
-  height: 3px;
+  width: 24px; /* 6x4 */
+  height: 4px; /* 1x4 */
   background: white;
   border-radius: 2px;
-  margin: 2.5px 0;
+  margin: 4px 0; /* 1x4 */
 }
 
 .menu-card {
   position: absolute;
-  top: 55px;
+  top: 56px; /* 14x4 */
   left: 0;
   background: white;
   border: 2px solid #2e59a6;
-  border-radius: 12px;
-  padding: 15px 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  min-width: 250px;
+  border-radius: 12px; /* 3x4 */
+  padding: 16px 20px; /* 4x4, 5x4 */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  min-width: 240px; /* 60x4 */
 }
 
 .menu-section strong {
   color: #2e59a6;
-  font-size: 1.4rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 8px; /* 2x4 */
   font-family: 'BorelSans', sans-serif;
 }
 
 .menu-section ul {
   margin: 0;
-  padding-left: 20px;
+  padding-left: 20px; /* 5x4 */
   list-style: none;
 }
 
 .menu-section li {
-  margin: 8px 0;
+  margin: 8px 0; /* 2x4 */
 }
 
 .menu-section a {
   color: #000;
   text-decoration: none;
-  font-size: 1.4rem;
+  font-size: 1.125rem;
+  line-height: 1.5;
 }
 
 .menu-section a:hover {
@@ -155,11 +164,12 @@ const showMenu = ref(false)
 
 .menu-close {
   position: absolute;
-  top: 8px;
-  right: 10px;
+  top: 8px; /* 2x4 */
+  right: 12px; /* 3x4 */
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: #000;
+  padding: 4px; /* 1x4 */
 }
 
 .menu-close:hover {
@@ -169,44 +179,47 @@ const showMenu = ref(false)
 /* Contenu */
 .home-content {
   text-align: center;
-  padding: 20px;
+  padding: 24px 16px; /* 6x4, 4x4 */
+  max-width: 100%;
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 1.75rem;
+  line-height: 1.3;
   color: #000;
-  margin-bottom: 10px;
+  margin: 0 0 12px 0; /* 3x4 */
   font-family: 'BorelSans', sans-serif;
 }
 
 .tagline {
-  font-size: 1.6rem;
+  font-size: 1rem;
+  line-height: 1.5;
   color: #000;
-  margin-bottom: 40px;
+  margin: 0 0 32px 0; /* 8x4 */
 }
 
 .cards {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 40px;
+  margin-bottom: 32px; /* 8x4 */
 }
 
 .card {
   background: #2e59a6;
   border: none;
-  border-radius: 16px;
-  padding: 30px 40px;
-  margin: 15px;
+  border-radius: 12px; /* 3x4 */
+  padding: 20px 24px; /* 5x4, 6x4 */
+  margin: 8px; /* 2x4 */
   text-decoration: none;
   color: #fff;
   transition: transform 0.2s, box-shadow 0.2s;
-  min-width: 200px;
+  min-width: 140px; /* 35x4 */
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px); /* 1x4 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .card-disabled {
@@ -215,23 +228,23 @@ h1 {
 }
 
 .card-icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  height: 60px;
+  font-size: 2rem;
+  margin-bottom: 12px; /* 3x4 */
+  height: 48px; /* 12x4 */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .card-icon-mesure .icon-mesure {
-  width: 80px;
-  height: 40px;
+  width: 72px; /* 18x4 */
+  height: 36px; /* 9x4 */
 }
 
 .card-icon-ecriture {
   position: relative;
   width: 100%;
-  height: 60px;
+  height: 48px; /* 12x4 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,7 +253,7 @@ h1 {
 .card-icon-ecriture .icon-guide {
   position: absolute;
   font-family: 'BorelGuides', sans-serif !important;
-  font-size: 4rem;
+  font-size: 3rem;
   color: rgba(255, 255, 255, 0.2);
   line-height: 1;
 }
@@ -248,27 +261,191 @@ h1 {
 .card-icon-ecriture .icon-abc {
   position: relative;
   font-family: 'BorelFRTrad', cursive !important;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: #fbb90d;
   z-index: 1;
   text-align: center;
 }
 
 .card-title {
-  font-size: 1.8rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 4px; /* 1x4 */
   font-family: 'BorelSans', sans-serif;
 }
 
 .card-desc {
-  font-size: 1.3rem;
+  font-size: 1rem;
+  line-height: 1.4;
   color: #fff;
 }
 
 .footer-text {
   color: #000;
-  font-size: 1rem;
+  font-size: 0.875rem;
   line-height: 1.6;
+}
+
+/* ==============================================
+   RESPONSIVE - Tablette (768px+)
+   ============================================== */
+@media (min-width: 768px) {
+  .home-wrapper {
+    padding: 80px 24px 32px 24px; /* 20x4, 6x4, 8x4, 6x4 */
+  }
+
+  .menu-overlay {
+    top: 20px; /* 5x4 */
+    left: 20px; /* 5x4 */
+  }
+
+  h1 {
+    font-size: 2.25rem;
+    margin: 0 0 16px 0; /* 4x4 */
+  }
+
+  .tagline {
+    font-size: 1.25rem;
+    margin: 0 0 40px 0; /* 10x4 */
+  }
+
+  .cards {
+    margin-bottom: 40px; /* 10x4 */
+  }
+
+  .card {
+    padding: 28px 36px; /* 7x4, 9x4 */
+    margin: 12px; /* 3x4 */
+    min-width: 200px; /* 50x4 */
+  }
+
+  .card-icon {
+    height: 56px; /* 14x4 */
+    margin-bottom: 16px; /* 4x4 */
+  }
+
+  .card-icon-mesure .icon-mesure {
+    width: 80px; /* 20x4 */
+    height: 40px; /* 10x4 */
+  }
+
+  .card-icon-ecriture {
+    height: 56px; /* 14x4 */
+  }
+
+  .card-icon-ecriture .icon-guide {
+    font-size: 3.5rem;
+  }
+
+  .card-icon-ecriture .icon-abc {
+    font-size: 1.75rem;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    margin-bottom: 8px; /* 2x4 */
+  }
+
+  .card-desc {
+    font-size: 1.125rem;
+  }
+
+  .footer-text {
+    font-size: 1rem;
+  }
+}
+
+/* ==============================================
+   RESPONSIVE - Desktop / TNI (1024px+)
+   ============================================== */
+@media (min-width: 1024px) {
+  .home-wrapper {
+    padding: 24px; /* 6x4 */
+  }
+
+  .menu-overlay {
+    top: 24px; /* 6x4 */
+    left: 24px; /* 6x4 */
+  }
+
+  .menu-toggle {
+    width: 52px; /* 13x4 */
+    height: 52px; /* 13x4 */
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin: 0 0 20px 0; /* 5x4 */
+  }
+
+  .tagline {
+    font-size: 1.5rem;
+    margin: 0 0 48px 0; /* 12x4 */
+  }
+
+  .card {
+    padding: 32px 44px; /* 8x4, 11x4 */
+    margin: 16px; /* 4x4 */
+    min-width: 220px; /* 55x4 */
+    border-radius: 16px; /* 4x4 */
+  }
+
+  .card-icon {
+    height: 64px; /* 16x4 */
+    margin-bottom: 20px; /* 5x4 */
+  }
+
+  .card-icon-ecriture {
+    height: 64px; /* 16x4 */
+  }
+
+  .card-icon-ecriture .icon-guide {
+    font-size: 4rem;
+  }
+
+  .card-icon-ecriture .icon-abc {
+    font-size: 2rem;
+  }
+
+  .card-title {
+    font-size: 1.75rem;
+    margin-bottom: 12px; /* 3x4 */
+  }
+
+  .card-desc {
+    font-size: 1.25rem;
+  }
+
+  .footer-text {
+    font-size: 1.125rem;
+  }
+}
+
+/* ==============================================
+   RESPONSIVE - Grand écran / TNI 4K (1440px+)
+   ============================================== */
+@media (min-width: 1440px) {
+  h1 {
+    font-size: 3.5rem;
+  }
+
+  .tagline {
+    font-size: 1.75rem;
+    margin: 0 0 56px 0; /* 14x4 */
+  }
+
+  .card {
+    padding: 36px 52px; /* 9x4, 13x4 */
+    margin: 20px; /* 5x4 */
+  }
+
+  .card-title {
+    font-size: 2rem;
+  }
+
+  .card-desc {
+    font-size: 1.375rem;
+  }
 }
 </style>

@@ -258,27 +258,41 @@ function drawScene() {
   })
 }
 
+function getClientPos(e) {
+  if (e.touches && e.touches.length > 0) {
+    return { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  return { x: e.clientX, y: e.clientY }
+}
+
 function startDrag(e) {
   if (e.target === rotateHandle.value) return
+  e.preventDefault()
   isDragging = true
   etalonContainer.value.classList.add('dragging')
   const rect = etalonContainer.value.getBoundingClientRect()
-  dragOffset.x = e.clientX - rect.left
-  dragOffset.y = e.clientY - rect.top - 5
+  const pos = getClientPos(e)
+  dragOffset.x = pos.x - rect.left
+  dragOffset.y = pos.y - rect.top - 5
 }
 
 function startRotate(e) {
   e.stopPropagation()
+  e.preventDefault()
   isRotating = true
 }
 
-function onMouseMove(e) {
+function onMove(e) {
   if (!canvasContainer.value || !etalonContainer.value) return
+  if (!isDragging && !isRotating) return
+  
+  e.preventDefault()
+  const pos = getClientPos(e)
   const containerRect = canvasContainer.value.getBoundingClientRect()
   
   if (isDragging) {
-    let x = e.clientX - containerRect.left - dragOffset.x
-    let y = e.clientY - containerRect.top - dragOffset.y
+    let x = pos.x - containerRect.left - dragOffset.x
+    let y = pos.y - containerRect.top - dragOffset.y
 
     x = Math.max(10, Math.min(containerRect.width - 20, x))
     y = Math.max(30, Math.min(containerRect.height - 30, y))
@@ -292,7 +306,7 @@ function onMouseMove(e) {
     const anchorX = etalonRect.left
     const anchorY = etalonRect.top + 5
     
-    const angle = Math.atan2(e.clientY - anchorY, e.clientX - anchorX)
+    const angle = Math.atan2(pos.y - anchorY, pos.x - anchorX)
     etalonAngle = angle * 180 / Math.PI
     updateEtalonRotation()
   }
@@ -434,8 +448,14 @@ onMounted(() => {
     }, 50)
   })
   
-  document.addEventListener('mousemove', onMouseMove)
+  // Événements souris
+  document.addEventListener('mousemove', onMove)
   document.addEventListener('mouseup', stopDragRotate)
+  
+  // Événements tactiles
+  document.addEventListener('touchmove', onMove, { passive: false })
+  document.addEventListener('touchend', stopDragRotate)
+  document.addEventListener('touchcancel', stopDragRotate)
   
   window.addEventListener('resize', () => {
     initCanvas()
@@ -444,8 +464,11 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  document.removeEventListener('mousemove', onMouseMove)
+  document.removeEventListener('mousemove', onMove)
   document.removeEventListener('mouseup', stopDragRotate)
+  document.removeEventListener('touchmove', onMove)
+  document.removeEventListener('touchend', stopDragRotate)
+  document.removeEventListener('touchcancel', stopDragRotate)
   stopConfetti()
 })
 </script>
@@ -456,13 +479,13 @@ onUnmounted(() => {
     
     <!-- Menu burger en overlay -->
     <div class="menu-overlay">
-      <div class="menu-toggle" @click="showInstructions = !showInstructions">
+      <div class="menu-toggle" @click="showInstructions = !showInstructions" @touchend.prevent="showInstructions = !showInstructions">
         <span class="burger-line"></span>
         <span class="burger-line"></span>
         <span class="burger-line"></span>
       </div>
       <div class="menu-card" v-show="showInstructions">
-        <div class="menu-close" @click="showInstructions = false">✕</div>
+        <div class="menu-close" @click="showInstructions = false" @touchend.prevent="showInstructions = false">✕</div>
         
         <div class="menu-section">
           <strong>📍 Navigation</strong>
@@ -487,12 +510,12 @@ onUnmounted(() => {
     <!-- Zone de dessin principale -->
     <div class="canvas-container" ref="canvasContainer">
       <canvas ref="canvas"></canvas>
-      <div class="etalon-container" ref="etalonContainer" @mousedown="startDrag">
+      <div class="etalon-container" ref="etalonContainer" @mousedown="startDrag" @touchstart="startDrag">
         <div class="etalon-wrapper">
           <div class="etalon">
             <div class="etalon-arrow"></div>
           </div>
-          <div class="rotate-handle" ref="rotateHandle" @mousedown="startRotate"></div>
+          <div class="rotate-handle" ref="rotateHandle" @mousedown="startRotate" @touchstart="startRotate"></div>
         </div>
       </div>
     </div>

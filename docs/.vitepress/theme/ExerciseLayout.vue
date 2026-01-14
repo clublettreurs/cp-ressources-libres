@@ -6,8 +6,8 @@ const { frontmatter } = useData()
 <template>
   <div class="exercise-layout">
     <div class="exercise-header">
-      <a href="/" class="home-link">🏠 Accueil</a>
-      <a href="/grandeurs-mesures/" class="back-link">← Retour aux exercices</a>
+      <a href="/cp-ressources-libres/" class="home-link">🏠 Accueil</a>
+      <a href="/cp-ressources-libres/grandeurs-mesures/" class="back-link">← Retour aux exercices</a>
     </div>
     <div class="exercise-content">
       <Content />
